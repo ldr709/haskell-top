@@ -1,5 +1,9 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module Top.Apartness where
 
+import Algebra.Lattice
+import Algebra.SemiBoundedLattice
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Partial
@@ -28,13 +32,20 @@ class Apartness a where
 
 newtype EqApart a = EqApart
   { runEqApart :: a
-  }
+  } deriving ( Eq
+             , Ord
+             , Show
+             , JoinSemiLattice
+             , MeetSemiLattice
+             , Lattice
+             , DistributiveLattice
+             )
 
 instance Eq a => Apartness (EqApart a) where
   (EqApart x) ?/=? (EqApart y) =
     if x == y
       then empty
-      else return ()
+      else pure ()
   -- Deriving Eq usually means that equality checking is a total function, so
   -- this can be done more easily.
   whichDifferent (EqApart x) (EqApart y) (EqApart z) =

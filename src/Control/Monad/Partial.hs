@@ -13,6 +13,7 @@ import Data.Unamb
 
 -- Values in haskell are partial, but this is still useful for using types to
 -- document an API. Adds an additional layer of laziness to the type.
+-- TODO: Hide implementation details, maybe allow pure Haskell implementation.
 data Partial a = Partial { nontotalRunPartial :: a }
 
 instance Functor Partial where
@@ -36,7 +37,7 @@ instance Fail.MonadFail Partial where
   fail = return . error
 
 -- Note: mplus is nondeterministic, so if both arguments terminate then both are
--- valid results.
+-- valid results. TODO: terminate unused computation.
 instance Alternative Partial where
   empty = Partial undefined
   (<|>) = liftA2 unamb

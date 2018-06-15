@@ -21,9 +21,12 @@ description:         Please see the README on Github at <https://github.com/ldr7
 
 dependencies:
 - base >= 4.7 && < 5
+- lattices
+- semibounded-lattices
 - streams
 - transformers
 - unamb
+- universe
 
 library:
   source-dirs: src
@@ -38,4 +41,3 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - top
-    - top-exact-real

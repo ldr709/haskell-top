@@ -8,7 +8,9 @@ import Control.Monad.Partial
 import Control.Monad.Trans.Cont
 import Control.Monad.Trans.Cont.Plus
 import Data.Int
+import Data.List
 import Data.Stream.Infinite
+import Data.Universe
 import Data.Void
 import Data.Word
 import Numeric.Natural
@@ -20,8 +22,10 @@ class Compact a where
 
 class Overt a where
   -- Witness that a is overt. Must only return when given an open set that
-  -- contains a point of the space.
-  overt :: ContT () Partial a
+  -- contains a point of the space. If there are multiple a's for which the
+  -- partial function returns then one of them will be picked (probably
+  -- nondeterministically).
+  overt :: ContT b Partial a
 
 -- Binary Tychonoff's theorem
 instance (Compact a, Compact b) => Compact (a, b) where
@@ -44,7 +48,7 @@ instance (Overt a, Overt b) => Overt (Either a b) where
   overt = Left <$> overt <|> Right <$> overt
 
 instance Compact Void where
-  compact = ContT $ \o -> return ()
+  compact = ContT $ \_ -> return ()
 instance Overt Void where
   overt = empty
 
@@ -58,70 +62,67 @@ instance Compact Bool where
 instance Overt Bool where
   overt = return False <|> return True
 
-newtype CompactEnum a = CompactEnum { runCompactEnum :: a }
-  deriving (Enum, Bounded, Show, Eq)
+newtype CompactFinite a = CompactFinite { runCompactFinite :: a }
+  deriving (Enum, Bounded, Universe, Finite, Show, Eq)
 
 -- Finite -> Compact
-instance (Enum a, Bounded a, Eq a) => Compact (CompactEnum a) where
-  compact = go minBound
-    where
-      go x | x == maxBound = return maxBound
-      go x | otherwise     = return x <|> go (succ x)
+-- TODO: Maybe use foldl'
+instance Finite a => Compact (CompactFinite a) where
+  compact = foldr (contSeq . pure) (ContT $ \_ -> return ()) universeF
 
--- Discrete -> Overt
-instance Enum a => Overt (CompactEnum a) where
-  overt = nonneg start <|> neg start
-    where
-      nonneg x = return x <|> nonneg (succ x)
-      neg x = return (pred x) <|> nonneg (pred x)
-      start = toEnum 0
+-- Recursively Enumerable -> Overt
+instance Universe a => Overt (CompactFinite a) where
+  overt = foldr ((<|>) . pure) empty universe
 
 -- <$> can be used to map compactness (and overtness) through any surjection.
 instance Compact Ordering where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Ordering where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Char where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Char where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Int where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Int where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Int8 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Int8 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Int16 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Int16 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Int32 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Int32 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Int64 where -- Not very compact
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Int64 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Word where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Word where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Word8 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Word8 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Word16 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Word16 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Word32 where
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Word32 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
 instance Compact Word64 where -- Not very compact
-  compact = runCompactEnum <$> compact
+  compact = runCompactFinite <$> compact
 instance Overt Word64 where
-  overt = runCompactEnum <$> overt
+  overt = runCompactFinite <$> overt
+
+instance Overt Integer where
+  overt = runCompactFinite <$> overt

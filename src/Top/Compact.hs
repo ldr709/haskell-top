@@ -124,5 +124,10 @@ instance Compact Word64 where -- Not very compact
 instance Overt Word64 where
   overt = runCompactFinite <$> overt
 
+instance Universe Natural where
+  universe = [0 ..]
+
 instance Overt Integer where
+  overt = runCompactFinite <$> overt
+instance Overt Natural where
   overt = runCompactFinite <$> overt

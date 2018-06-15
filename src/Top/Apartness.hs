@@ -3,6 +3,9 @@ module Top.Apartness where
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Partial
+import Data.Int
+import Data.Word
+import Numeric.Natural
 
 -- (x ?/=? y) should terminate if and only if x != y.
 --
@@ -23,7 +26,9 @@ class Apartness a where
   whichDifferent :: MonadPartial p => a -> a -> a -> p Bool
   whichDifferent x y z = x ?/=? y *> pure False <|> x ?/=? z *> pure True
 
-newtype EqApart a = EqApart a
+newtype EqApart a = EqApart
+  { runEqApart :: a
+  }
 
 instance Eq a => Apartness (EqApart a) where
   (EqApart x) ?/=? (EqApart y) =
@@ -31,7 +36,6 @@ instance Eq a => Apartness (EqApart a) where
     if x == y
       then undefined
       else ()
-
   -- Deriving Eq usually means that equality checking is a total function, so
   -- this can be done more easily.
   whichDifferent (EqApart x) (EqApart y) (EqApart z) =
@@ -39,3 +43,52 @@ instance Eq a => Apartness (EqApart a) where
       (False, _) -> pure False
       (_, False) -> pure True
       (True, True) -> empty
+
+instance Apartness () where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Bool where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Ordering where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Char where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Int where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Int8 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Int16 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Int32 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Int64 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Word where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Word8 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Word16 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Word32 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Word64 where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Integer where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)
+instance Apartness Natural where
+  x ?/=? y = (EqApart x) ?/=? (EqApart y)
+  whichDifferent x y z = whichDifferent (EqApart x) (EqApart y) (EqApart z)

@@ -32,10 +32,9 @@ newtype EqApart a = EqApart
 
 instance Eq a => Apartness (EqApart a) where
   (EqApart x) ?/=? (EqApart y) =
-    pure $
     if x == y
-      then undefined
-      else ()
+      then empty
+      else return ()
   -- Deriving Eq usually means that equality checking is a total function, so
   -- this can be done more easily.
   whichDifferent (EqApart x) (EqApart y) (EqApart z) =

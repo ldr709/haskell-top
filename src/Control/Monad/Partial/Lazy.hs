@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 
 module Control.Monad.Partial.Lazy
   ( PartialT()
@@ -38,16 +38,20 @@ instance (Monad m) => Monad (PartialT m) where
 instance MonadTrans PartialT where
   lift = PartialT
 
+partialFail = PartialT . errorWithoutStackTrace
+
 instance (Monad m) => Fail.MonadFail (PartialT m) where
-  fail = PartialT . error
+  fail = partialFail
 
 instance (Applicative m) => Alternative (PartialT m) where
-  empty = PartialT undefined
+  empty = partialFail "Control.Monad.Partial.Lazy.empty"
   -- TODO: terminate unused computation.
-  (<|>) = liftA2 unamb
+  (PartialT x) <|> (PartialT y) = PartialT $ unamb x y
 
 instance (Monad m) => MonadPlus (PartialT m)
 
-instance MonadPartial Partial where
-  lazy = PartialT . Identity
-  nontotalRunPartial = runIdentity . runPartialT
+instance (Monad m) => MonadPartialT m (PartialT m) where
+  lazyT = PartialT
+  nontotalRunPartialT = runPartialT
+
+instance MonadPartial Partial

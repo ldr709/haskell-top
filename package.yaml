@@ -21,6 +21,7 @@ description:         Please see the README on Github at <https://github.com/ldr7
 
 dependencies:
 - base >= 4.7 && < 5
+- enclosed-exceptions
 - lattices
 - semibounded-lattices
 - streams

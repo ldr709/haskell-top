@@ -1,48 +1,30 @@
-module Control.Monad.Partial
-  ( Partial()
-  , nontotalRunPartial
-  , contSeq
-  ) where
+module Control.Monad.Partial where
 
-import Control.Applicative
 import Control.Monad
-import Control.Monad.Trans.Cont
 import Control.Monad.Fail as Fail
-import Control.Monad.Zip
+import Control.Monad.Trans.Cont
 import Data.Unamb
 
--- Values in haskell are partial, but this is still useful for using types to
--- document an API. Adds an additional layer of laziness to the type.
--- TODO: Hide implementation details, maybe allow pure Haskell implementation.
-data Partial a = Partial { nontotalRunPartial :: a }
+-- A MonadPartial is a Monad that represents non-total computations. Values in
+-- haskell are partial, but it is still useful to specify what types aren't
+-- total, and there are multiple implementations of MonadPartial. return may be
+-- strict, so if you want to turn a unevaluated lazy value into a partial value
+-- use lazy.
+--
+-- The Applicative instance's (*>) and (<*) must return a computation that
+-- doesn't complete unless both arguments complete. That is, they must act like
+-- seq. Similarly, the Functor's (<$) must force both its arguments.
+--
+-- MonadPlus's mempty is a non-total computation. mplus evaluates both arguments
+-- in parallel, then picks the one that terminates. If both do it can pick
+-- either (nondeterministically). If neither do then it doesn't terminate.
+class (MonadPlus p, Fail.MonadFail p) => MonadPartial p where
+  -- Like return, but not strict.
+  lazy :: a -> p a
 
-instance Functor Partial where
-  fmap f = Partial . f . nontotalRunPartial
-
-instance Applicative Partial where
-  pure = Partial
-  (<*>) f = Partial . nontotalRunPartial f . nontotalRunPartial
-  (*>) = liftA2 seq
-  (<*) = flip (*>)
+  -- Evaluate the partial computation. Doesn't always halt.
+  nontotalRunPartial :: p a -> a
 
 -- Lift seq into ContT
-contSeq :: ContT a Partial x -> ContT a Partial x -> ContT a Partial x
+contSeq :: MonadPartial p => ContT a p x -> ContT a p x -> ContT a p x
 contSeq u v = ContT $ \c -> runContT u c *> runContT v c
-
-instance Monad Partial where
-  x >>= f = fmap (nontotalRunPartial . f) x
-  fail = Fail.fail
-
-instance Fail.MonadFail Partial where
-  fail = return . error
-
--- Note: mplus is nondeterministic, so if both arguments terminate then both are
--- valid results. TODO: terminate unused computation.
-instance Alternative Partial where
-  empty = Partial undefined
-  (<|>) = liftA2 unamb
-
-instance MonadPlus Partial
-
-instance MonadZip Partial where
-  mzipWith = liftA2

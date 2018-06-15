@@ -7,15 +7,17 @@ import Control.Monad
 import Control.Monad.Partial
 import Top.Apartness
 
--- Sort of like a pseudo-order.
+-- Sort of like a pseudo-order. Total means that every element must be ordered
+-- with every other, so meet and join must always return one of their two
+-- arguments.
 --
 -- Laws:
 -- Totality: not (x \/ y ?/=? x and x \/ y ?/=? y)
 --           not (x /\ y ?/=? x and x /\ y ?/=? y)
 -- These two laws imply distributivity.
 --
--- All functions defined directly in this class are for convenience. They may be
--- overridden with better implementations, but those implementations must be
+-- All functions given default definitions class are for convenience. They may
+-- be overridden with better implementations, but those implementations must be
 -- equivalent to the ones defined here.
 class (Apartness a, DistributiveLattice a) =>
       TotalLattice a
@@ -23,21 +25,22 @@ class (Apartness a, DistributiveLattice a) =>
 
   -- (x ?<? y) should terminate if and only if (x < y).
   infixl 4 ?<?
-  (?<?) :: a -> a -> Partial ()
+  (?<?) :: MonadPartial p => a -> a -> p ()
   x ?<? y = x /\ y ?/=? y
 
   -- pseudoCompare is like Ord's compare: return true if (x < y), false if
   -- (x > y), and not terminate if they are equal.
-  pseudoCompare :: a -> a -> Partial Bool
+  pseudoCompare :: MonadPartial p => a -> a -> p Bool
   pseudoCompare x y = whichDifferent (x /\ y) x y
 
   -- Witness to transitivity. Precondition: y < z. False if (y < x). True if
   -- (x < z). If both are true then it can return either. (At least one must
-  -- hold).
-  whichSide :: a -> a -> a -> Bool
-  whichSide x y z = nontotalRunPartial $ whichDifferent (x /\ z \/ y) y z
+  -- hold for the precondition to hold). If the precondition fails then it may
+  -- or may not halt.
+  whichSide :: MonadPartial p => a -> a -> a -> p Bool
+  whichSide x y z = whichDifferent (x /\ z \/ y) y z
 
 -- Flipped (?<?).
 infixl 4 ?>?
-(?>?) :: TotalLattice a => a -> a -> Partial ()
+(?>?) :: (MonadPartial p, TotalLattice a) => a -> a -> p ()
 (?>?) = flip (?<?)

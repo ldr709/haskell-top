@@ -18,14 +18,14 @@ import Numeric.Natural
 class Compact a where
   -- Witness that a is compact. Must only return when given an open set that
   -- contains the whole space.
-  compact :: ContT () Partial a
+  compact :: MonadPartial p => ContT () p a
 
 class Overt a where
   -- Witness that a is overt. Must only return when given an open set that
   -- contains a point of the space. If there are multiple a's for which the
   -- partial function returns then one of them will be picked (probably
   -- nondeterministically).
-  overt :: ContT b Partial a
+  overt :: MonadPartial p => ContT b p a
 
 -- Binary Tychonoff's theorem
 instance (Compact a, Compact b) => Compact (a, b) where

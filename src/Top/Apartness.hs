@@ -13,14 +13,14 @@ import Control.Monad.Partial
 -- Tightness: x is considered equal to y if not x ?/=? y.
 class Apartness a where
   infixl 4 ?/=?
-  (?/=?) :: a -> a -> Partial ()
+  (?/=?) :: MonadPartial p => a -> a -> p ()
   -- whichDifferent is a witness to transitivity.
   -- whichDifferent returns false if x /= y, and true if x /= z. If both hold
   -- then it can pick either. If neither hold then it runs forever.
   --
-  -- Default is to run both in parallel, and pick whichever returns first, but
-  -- this is nondeterministic and may be inefficient.
-  whichDifferent :: a -> a -> a -> Partial Bool
+  -- Default is to use the partiallity monad's choice operator to run both in
+  -- parallel until one returns.
+  whichDifferent :: MonadPartial p => a -> a -> a -> p Bool
   whichDifferent x y z = x ?/=? y *> pure False <|> x ?/=? z *> pure True
 
 newtype EqApart a = EqApart a

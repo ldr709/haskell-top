@@ -23,7 +23,10 @@ import Data.Unamb
 -- in parallel, then picks the one that terminates. If both do it can pick
 -- either (nondeterministically). If neither do then it doesn't terminate. It is
 -- valid to use infinite recursion on <|>, like (x = x <|> y). It will still
--- terminate if any thing that gets <|> termintes.
+-- terminate if any thing that gets <|> terminates.
+--
+-- p () will often be used as a kind of Bool. Termination is to be considered as
+-- True, and nontermination or error as False.
 class (Monad m, MonadPlus p, Fail.MonadFail p) =>
       MonadPartialT m p | p -> m where
 

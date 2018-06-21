@@ -15,6 +15,12 @@ import Data.Void
 import Data.Word
 import Numeric.Natural
 
+-- Maybe give compactness laws, if there are some. Filters, or something like
+-- that.
+
+-- A compact set is given by a filter. A overt set is given by a prime directed
+-- set (that is not a filter).
+
 class Compact a where
   -- Witness that a is compact. Must only return when given an open set that
   -- contains the whole space.

@@ -2,7 +2,7 @@ module Algebra.LinearOrder where
 
 import Algebra.Apartness
 import Algebra.PartialOrd
-import Algebra.Quasiorder
+import Algebra.QuasiOrder
 import Control.Applicative
 import Control.Monad.Partial
 import Data.Int
@@ -15,7 +15,7 @@ import Numeric.Natural
 --
 -- whichSide and linearCompare must be equivalent to the default definitions
 -- given here.
-class (Apartness a, Quasiorder a) => LinearOrder a where
+class (Apartness a, QuasiOrder a) => LinearOrder a where
   -- Witness to Comparison. Precondition: x ?<? z. True if (x ?<? y). False if
   -- (y ?<? z). If both are true then it can return either. (At least one must
   -- hold for the precondition to hold). If the precondition fails then it may

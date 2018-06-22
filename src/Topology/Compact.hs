@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Top.Compact where
+module Topology.Compact where
 
 import Control.Applicative
 import Control.Monad
@@ -16,7 +16,7 @@ import Data.Word
 import Numeric.Natural
 
 -- Maybe give compactness laws, if there are some. Filters, or something like
--- that.
+-- that. Might be better not to use type classes.
 
 -- A compact set is given by a filter. A overt set is given by a prime directed
 -- set (that is not a filter).

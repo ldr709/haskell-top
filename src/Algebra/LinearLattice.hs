@@ -4,7 +4,7 @@ import Algebra.Apartness
 import Algebra.Lattice
 import Algebra.LinearOrder
 import Algebra.PartialOrd
-import Algebra.Quasiorder
+import Algebra.QuasiOrder
 import Algebra.SemiBoundedLattice
 import Control.Applicative
 import Control.Monad

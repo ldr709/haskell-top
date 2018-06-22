@@ -3,7 +3,7 @@
 module Algebra.Apartness where
 
 import {-# SOURCE #-} Algebra.LinearOrder
-import Algebra.Quasiorder
+import Algebra.QuasiOrder
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Partial
@@ -22,7 +22,7 @@ class Apartness a where
   infixl 4 ?/=?
   (?/=?) :: MonadPartial p => a -> a -> p ()
 
-  default (?/=?) :: (Quasiorder a, MonadPartial p, LinearOrder a) =>
+  default (?/=?) :: (QuasiOrder a, MonadPartial p, LinearOrder a) =>
     a -> a -> p ()
   x ?/=? y = (x ?<? y) <|> (x ?>? y)
 

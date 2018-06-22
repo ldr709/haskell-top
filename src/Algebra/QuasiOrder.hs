@@ -1,5 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Algebra.Quasiorder where
+module Algebra.QuasiOrder where
 
 import Algebra.Lattice
 import Algebra.Lattice.Ordered
@@ -16,16 +16,16 @@ import Numeric.Natural
 -- Laws:
 -- * Irreflexivity: not x ?<? x.
 -- * Transitivity:  x ?<? y and y ?<? z implies x ?<? z.
-class Quasiorder a where
+class QuasiOrder a where
   infixl 4 ?<?
   (?<?) :: MonadPartial p => a -> a -> p ()
 
 -- Flipped (?<?).
 infixl 4 ?>?
-(?>?) :: (MonadPartial p, Quasiorder a) => a -> a -> p ()
+(?>?) :: (MonadPartial p, QuasiOrder a) => a -> a -> p ()
 (?>?) = flip (?<?)
 
-instance PartialOrd a => Quasiorder (TotalWrap a) where
+instance PartialOrd a => QuasiOrder (TotalWrap a) where
   (TotalWrap x) ?<? (TotalWrap y) =
     if (x `leq` y) && (x /= y)
       then pure ()
@@ -42,65 +42,65 @@ newtype TotalWrap a = TotalWrap
              , DistributiveLattice
              )
 
-instance Quasiorder () where
+instance QuasiOrder () where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Bool where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Bool where
+instance QuasiOrder Bool where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Ordering where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Ordering where
+instance QuasiOrder Ordering where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Char where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Char where
+instance QuasiOrder Char where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Int where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Int where
+instance QuasiOrder Int where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Int8 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Int8 where
+instance QuasiOrder Int8 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Int16 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Int16 where
+instance QuasiOrder Int16 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Int32 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Int32 where
+instance QuasiOrder Int32 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Int64 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Int64 where
+instance QuasiOrder Int64 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Word where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Word where
+instance QuasiOrder Word where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Word8 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Word8 where
+instance QuasiOrder Word8 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Word16 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Word16 where
+instance QuasiOrder Word16 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Word32 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Word32 where
+instance QuasiOrder Word32 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Word64 where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Word64 where
+instance QuasiOrder Word64 where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Integer where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Integer where
+instance QuasiOrder Integer where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)
 instance PartialOrd Natural where
   x `leq` y = (Ordered x) `leq` (Ordered y)
-instance Quasiorder Natural where
+instance QuasiOrder Natural where
   x ?<? y = (TotalWrap x) ?<? (TotalWrap y)

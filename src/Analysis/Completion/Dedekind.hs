@@ -10,7 +10,9 @@ module Analysis.Completion.Dedekind
 
 import Algebra.LinearOrder
 import Algebra.QuasiOrder
+import Control.Applicative
 import Control.Monad.Partial
+import Control.Monad.Trans.Cont
 import Topology.Compact
 
 -- Dedekind completion of a. Definable opens given by the (quasi) order topology
@@ -43,8 +45,8 @@ above (Dedekind x y) = y
 fromInner :: (QuasiOrder a, Overt a) => a -> Dedekind a
 fromInner x = dedekind (?<? x) (?>? x)
 
---instance Apartness (Dedekind a) where
+--instance (QuasiOrder a, Overt a) => Apartness (Dedekind a) where
 --  x ?/=? y = (below x)
 
---instance QuasiOrder (Dedekind a) where
---  (?<?)
+instance (QuasiOrder a, Overt a) => QuasiOrder (Dedekind a) where
+  x ?<? y = runContT overt $ liftA2 (*>) (above x) (below y)

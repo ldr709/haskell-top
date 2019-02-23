@@ -9,7 +9,7 @@ import Topology.Compact
 -- 0 < x and 0 < y implies 0 < x * y
 class (LinearLattice a, Field a) => RealOrderedField a
 
--- Fractional instance must form a field. fromRational must be an injection.
+-- fromRational must be an injection.
 -- Division by zero is undefined / doesn't terminate.
 -- abs x == x \/ negate x
 -- signum == x / abs x        (Note: undefined if x == 0)
